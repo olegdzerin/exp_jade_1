@@ -3,13 +3,19 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var formidable = require('formidable');
 
 var indexRouter = require('./routes/index');
 var index1Router = require('./routes/index1');
 var usersRouter = require('./routes/users');
 var filmsRouter = require('./routes/films');
 var actorsRouter = require('./routes/actors');
-
+var usersPostRouter = require('./routes/usersPost');
+var loadFileRouter = require('./routes/loadFile');
+var thankYouRouter = require('./routes/thank-you');
+var loadFilePostRouter = require('./routes/loadFilePost');
+var newsletterRouter = require('./routes/newsletter');
+var processRouter = require('./routes/process');
 
 var app = express();
  // var handlebars = require('express-handlebars');
@@ -49,7 +55,28 @@ app.use('/users', usersRouter);
 // app.use('/actors', actorsRouter);
 app.use('/films', filmsRouter);
 app.use('/actors', actorsRouter);
+app.use('/usersPost', usersPostRouter);
+app.use('/loadFile', loadFileRouter);
 
+
+// app.post('/loadFilePost/:year/:month', function(req,res,next){
+//   console.log(`req.params${req.params.year}`);
+//   var form = new formidable.IncomingForm();
+//   form.parse(req, function(err, fields, files){
+//       if(err) return res.redirect(303, '/error');
+//       console.log('received fields:');
+//       console.log(fields);
+//       console.log('received files:');
+//       console.log(files);
+// })
+//res.redirect(303,'/thank-you');
+// });
+app.use('/loadFilePost', loadFilePostRouter);
+
+app.use('/newsletter', newsletterRouter);
+app.use('/process', processRouter);
+  
+app.use('/thank-you', thankYouRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
