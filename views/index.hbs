@@ -1,10 +1,41 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
 {{> par}}
-<form action="/usersPost/site" method="POST" >
- <input type="text" name="email" val="Скрытое, но не секретное!">
-    <div></div>
-    <label for="fieldColor">Ваш любимый цвет: </label>
-     <input type="text" id="fieldColor" name="name"> </div>
-    <div> <button type="submit">Отправить</button> </div>
-</form>
+{{!-- <form action="/signing" method="POST"  >
+<div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" class="form-control" id="inputPassword">
+  </div>
+   <button type="submit" class="btn btn-primary">Submit</button>
+</form> --}}
+
+<div class="formContainer">
+    <form class="form-horizontal newsletterForm" role="form" 
+            action="/signing" method="POST">
+       
+        <div class="form-group">
+            <label for="fieldName" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" 
+                id="fieldName" name="name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="fieldEmail" class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-4">
+                <input type="email" class="form-control" required 
+                    id="fieldEmail" name="email">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-4">
+                <button type="submit" class="btn btn-default">Register</button>
+            </div>
+        </div>
+    </form>
+</div>

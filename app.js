@@ -13,7 +13,7 @@ var actorsRouter = require('./routes/actors');
 var usersPostRouter = require('./routes/usersPost');
 var loadFileRouter = require('./routes/loadFile');
 var thankYouRouter = require('./routes/thank-you');
-var loadFilePostRouter = require('./routes/loadFilePost');
+var signingRouter = require('./routes/signing');
 var newsletterRouter = require('./routes/newsletter');
 var processRouter = require('./routes/process');
 
@@ -56,7 +56,11 @@ app.use('/users', usersRouter);
 app.use('/films', filmsRouter);
 app.use('/actors', actorsRouter);
 app.use('/usersPost', usersPostRouter);
-app.use('/loadFile', loadFileRouter);
+// app.use('/signing', signingRouter);
+ app.post('/signing',function(req,res,next){
+   console.log('req');
+   res.redirect(303, '/thank-you');
+ })
 
 
 // app.post('/loadFilePost/:year/:month', function(req,res,next){
@@ -71,7 +75,7 @@ app.use('/loadFile', loadFileRouter);
 // })
 //res.redirect(303,'/thank-you');
 // });
-app.use('/loadFilePost', loadFilePostRouter);
+
 
 app.use('/newsletter', newsletterRouter);
 app.use('/process', processRouter);
