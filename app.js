@@ -16,6 +16,8 @@ var thankYouRouter = require('./routes/thank-you');
 var loadFilePostRouter = require('./routes/loadFilePost');
 var newsletterRouter = require('./routes/newsletter');
 var processRouter = require('./routes/process');
+// var authRouters = require('./routes/authRouters');
+var authRouters = require('./routes/authRouters');
 
 var app = express();
  // var handlebars = require('express-handlebars');
@@ -59,6 +61,9 @@ app.use('/usersPost', usersPostRouter);
 app.use('/loadFile', loadFileRouter);
 
 
+
+
+
 // app.post('/loadFilePost/:year/:month', function(req,res,next){
 //   console.log(`req.params${req.params.year}`);
 //   var form = new formidable.IncomingForm();
@@ -71,6 +76,7 @@ app.use('/loadFile', loadFileRouter);
 // })
 //res.redirect(303,'/thank-you');
 // });
+ 
 app.use('/loadFilePost', loadFilePostRouter);
 
 app.use('/newsletter', newsletterRouter);
@@ -78,9 +84,34 @@ app.use('/process', processRouter);
   
 app.use('/thank-you', thankYouRouter)
 // catch 404 and forward to error handler
+ app.use( authRouters);
+
+ // cookies
+ app.get('/set-cookies', (req,res) => {
+
+ // res.setHeader('Set-Cookie', 'newUser=true');
+
+ res.cookie('newUser',true,{
+   maxAge:1000 * 60 * 60 * 24,
+  //  secure: true,
+  httpOnly:true
+ })
+  console.log('You have cookies');
+  res.send('you have cookie')
+ });
+ app.get('/read-cookies', (req,res) => {
+
+  const cookies = req.cookies;
+  console.log(cookies);
+  res.json(cookies);
+
+});
+
+
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {

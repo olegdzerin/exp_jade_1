@@ -14,6 +14,8 @@ router.post('/site', function(req, res, next) {
   res.render('usersPost',{title: 
     {title:'post all ready',email:req.body.email,name:req.body.name}}
   );
+  //res.render('usersPost');
+//  res.send("i send respons");
 });
 
 
