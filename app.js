@@ -18,6 +18,8 @@ var newsletterRouter = require('./routes/newsletter');
 var processRouter = require('./routes/process');
 // var authRouters = require('./routes/authRouters');
 var authRouters = require('./routes/authRouters');
+const {requireAuth, checkUser} = require('./middleware/authMiddleware')
+
 
 var app = express();
  // var handlebars = require('express-handlebars');
@@ -31,6 +33,8 @@ var handlebars = require('express-handlebars').create({
       }
   }
 });
+
+
 // app.engine('handlebars', handlebars.engine);
 // app.set('view engine', 'handlebars');
 app.engine('hbs', handlebars.engine);
@@ -45,15 +49,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(function ( req, res, next) { 
-  console.log('res.locals');
-  res.locals.anyone = 7878;
+  
+  // res.locals.anyone = 7878;
+   console.log('res.locals');
+   var locals = res.locals
   
   next();
 });
-
+app.get('*', checkUser)
 app.use('/', indexRouter);
 app.use('/index1', index1Router);
-app.use('/users', usersRouter);
+app.use('/users',requireAuth, usersRouter);
 // app.use('/actors', actorsRouter);
 app.use('/films', filmsRouter);
 app.use('/actors', actorsRouter);
@@ -86,26 +92,7 @@ app.use('/thank-you', thankYouRouter)
 // catch 404 and forward to error handler
  app.use( authRouters);
 
- // cookies
- app.get('/set-cookies', (req,res) => {
 
- // res.setHeader('Set-Cookie', 'newUser=true');
-
- res.cookie('newUser',true,{
-   maxAge:1000 * 60 * 60 * 24,
-  //  secure: true,
-  httpOnly:true
- })
-  console.log('You have cookies');
-  res.send('you have cookie')
- });
- app.get('/read-cookies', (req,res) => {
-
-  const cookies = req.cookies;
-  console.log(cookies);
-  res.json(cookies);
-
-});
 
 
 app.use(function(req, res, next) {

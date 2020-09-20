@@ -1,76 +1,108 @@
 const User = require('../models/User');
-
+const jwt = require('jsonwebtoken');
 //hanfle erros
 const handleErrors = (err) => {
-        console.log(err.message);
-       // console.log(err._message);
-        console.log(err.code);
-        // dublicate error code
-        if (err.code === 11000) {
-            errors.email = 'this email is already registered';
-            return errors;
-        }
-      
-        let error = {
-            email: '',
-            password: ''
-        };
-        // validation errors
-        if (err.message.includes('user validation failed')) {
+    console.log(err.message);
+    // console.log(err._message);
+    console.log(err.code);
+    const errors= {};
+    // dublicate error code
+    if (err.code === 11000) {
+        errors.email = 'this email is already registered';
+        return errors;
+    }
+
+    let error = {
+        email: '',
+        password: ''
+    };
+    // validation errors
+    if (err.message.includes('user validation failed')) {
         //    console.log(Object.values(err.errors.email.properties.message));
-            Object.values(err.errors).forEach(({
-                    properties
-                }) => {
-                    error[properties.path] = properties.message;
-                })
-                // err.errors.email ? 
-                // error.email = err.errors.email.properties.message:error.email = '';
+        Object.values(err.errors).forEach(({
+            properties
+        }) => {
+            error[properties.path] = properties.message;
+        })
+   }
+   if (err.message === 'incorrect email'){
+       error.email = 'Введіть правельній email'
+   }
+   if (err.message === 'incorrect password'){
+    error.email = 'Введіть правельній пароль'
+}
+console.log(error);
+    return error;
+}
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+    return jwt.sign({
+        id
+    }, 'net ninja secret', {
+        expiresIn: maxAge
+    })
+}
 
-                // err.errors.password ? 
-                // error.password = err.errors.password.properties.message:error.password = '';
-                // console.log(error.email);
-                // console.log(error.password);
-               
+module.exports.signup_get = (req, res) => {
+    res.render('signup');
+}
 
-            }
-         
-            return error;
-        }
+module.exports.login_get = (req, res) => {
+    res.render('login');
+}
 
+module.exports.signup_post = async (req, res) => {
+    const {
+        email,
+        password
+    } = req.body;
+    try {
+        const user = await User.create({
+            email,
+            password
+        });
+        const token = createToken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+        })
+        res.status(201).json({
+            user: user._id
+        });
+    } catch (err) {
+        const errors = handleErrors(err);
+      //    handleErrors(err);
 
-            module.exports.signup_get = (req, res) => {
-                res.render('signup');
-            }
+        //   res.status(400).send('error,user not created')
+        res.status(400).json({errors})
+    }
+}
 
-            module.exports.login_get = (req, res) => {
-                res.render('login');
-            }
+module.exports.login_post = async (req, res) => {
+    const {
+        email,
+        password
+    } = req.body;
+    // User.login(email,password);
+    // console.log(email, password);
+    
+    // res.status(201).json({email, password});
+   try {
+       const user = await User.login(email,password);
+       const token = createToken(user._id);
+       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000  });
+       res.status(201).json({user: user._id});
+   }
+   catch (err) {
+       const errors = handleErrors(err);
+      console.log( err.message);
+  console.log(err);
+       res.status(400).json({errors});
+   }
 
-            module.exports.signup_post = async (req, res) => {
-                const {
-                    email,
-                    password
-                } = req.body;
-                try {
-                    const user = await User.create({
-                        email,
-                        password
-                    })
-                    res.status(201).json(user);
-                } catch (err) {
-                    const errros = handleErrors(err);
-                    //  handleErrors(err);
+}
 
-                    //   res.status(400).send('error,user not created')
-                    res.status(400).json(errros)
-                }
-            }
-
-            module.exports.login_post = async (req, res) => {
-                const {
-                    email,
-                    password
-                } = req.body;
-                console.log(email, password);
-                res.send("user login");
-            }
+module.exports.logout_get = (req, res) => {
+    res.cookie('jwt', '', {mavAge:1});
+    res.redirect('/');
+}

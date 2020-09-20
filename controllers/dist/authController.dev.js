@@ -1,12 +1,15 @@
 "use strict";
 
-var User = require('../models/User'); //hanfle erros
+var User = require('../models/User');
+
+var jwt = require('jsonwebtoken'); //hanfle erros
 
 
 var handleErrors = function handleErrors(err) {
   console.log(err.message); // console.log(err._message);
 
-  console.log(err.code); // dublicate error code
+  console.log(err.code);
+  var errors = {}; // dublicate error code
 
   if (err.code === 11000) {
     errors.email = 'this email is already registered';
@@ -31,7 +34,18 @@ var handleErrors = function handleErrors(err) {
     // console.log(error.password);
   }
 
+  console.log(error);
   return error;
+};
+
+var maxAge = 3 * 24 * 60 * 60;
+
+var createToken = function createToken(id) {
+  return jwt.sign({
+    id: id
+  }, 'net ninja secret', {
+    expiresIn: maxAge
+  });
 };
 
 module.exports.signup_get = function (req, res) {
@@ -43,7 +57,7 @@ module.exports.login_get = function (req, res) {
 };
 
 module.exports.signup_post = function _callee(req, res) {
-  var _req$body, email, password, user, errros;
+  var _req$body, email, password, user, token, errors;
 
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
@@ -59,41 +73,42 @@ module.exports.signup_post = function _callee(req, res) {
 
         case 4:
           user = _context.sent;
-          res.status(201).json(user);
-          _context.next = 12;
+          token = createToken(user._id);
+          res.cookie('jwk', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+          });
+          res.status(201).json({
+            user: user._id
+          });
+          _context.next = 14;
           break;
 
-        case 8:
-          _context.prev = 8;
+        case 10:
+          _context.prev = 10;
           _context.t0 = _context["catch"](1);
-          errros = handleErrors(_context.t0); //  handleErrors(err);
+          errors = handleErrors(_context.t0); //  handleErrors(err);
           //   res.status(400).send('error,user not created')
 
-          res.status(400).json(errros);
+          res.status(400).json({
+            errors: errors
+          });
 
-        case 12:
+        case 14:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[1, 8]]);
+  }, null, null, [[1, 10]]);
 };
 
-module.exports.login_post = function _callee2(req, res) {
-  var _req$body2, email, password;
-
-  return regeneratorRuntime.async(function _callee2$(_context2) {
-    while (1) {
-      switch (_context2.prev = _context2.next) {
-        case 0:
-          _req$body2 = req.body, email = _req$body2.email, password = _req$body2.password;
-          console.log(email, password);
-          res.send("user login");
-
-        case 3:
-        case "end":
-          return _context2.stop();
-      }
-    }
+module.exports.login_post = function (req, res, err) {
+  var _req$body2 = req.body,
+      email = _req$body2.email,
+      password = _req$body2.password;
+  console.log(email, password);
+  res.status(201).json({
+    email: email,
+    password: password
   });
 };
