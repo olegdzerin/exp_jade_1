@@ -1,9 +1,20 @@
-{{!-- {{#section 'head'}}
-<h1>used section body</h1>
-{{/section}} --}}
+
 <h1>Films</h1>
 without maket
 
 {{#section 'body'}}
 <h1>used section body</h1>
+{{/section}}
+{{#section 'head'}}
+<h1>used section head</h1>
+{{/section}}
+{{#section 'footer'}}
+<h1>used section footer</h1>
+{{/section}}
+{{#section 'jquery'}}
+<script>
+    (function(){
+          $('#some').html('<h1>some</h1>')
+    })()
+</script>
 {{/section}}

@@ -44,12 +44,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(function ( req, res, next) { 
-  console.log('res.locals');
-  res.locals.anyone = 7878;
+// app.use(function ( req, res, next) { 
+//   console.log('res.locals');
+//   res.locals.anyone = 7878;
   
-  next();
-});
+//   next();
+// });
 
 app.use('/', indexRouter);
 app.use('/index1', index1Router);
@@ -89,7 +89,7 @@ app.use('/thank-you', thankYouRouter)
  // cookies
  app.get('/set-cookies', (req,res) => {
 
- // res.setHeader('Set-Cookie', 'newUser=true');
+  //res.setHeader('Set-Cookie', 'newUser=true');
 
  res.cookie('newUser',true,{
    maxAge:1000 * 60 * 60 * 24,
@@ -103,9 +103,38 @@ app.use('/thank-you', thankYouRouter)
 
   const cookies = req.cookies;
   console.log(cookies);
-  res.json(cookies);
+   res.json(cookies);
+
 
 });
+app.get('/d', (req,res) => {
+  console.log('d');
+   res.download('/public/img/logo.png');
+   res.send('jkjhjk');
+})
+app.get('/file/:name', function (req, res, next) {
+  var options = {
+    root: path.join(__dirname, 'public/img'),
+    dotfiles: 'deny',
+    headers: {
+      'x-timestamp': Date.now(),
+      'x-sent': true
+    }
+  }
+
+  var fileName = req.params.name;
+  var fileName1 = options.root + '/'+ fileName; 
+  console.log(fileName1);
+  res.download(fileName1);
+  // res.sendFile(fileName, options, function (err) {
+  //   if (err) {
+  //     next(err)
+  //   } else {
+  //     console.log('Sent:', fileName)
+  //   }
+  // })
+  res.json('file');
+})
 
 
 app.use(function(req, res, next) {
