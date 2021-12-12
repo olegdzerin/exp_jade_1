@@ -26,12 +26,15 @@ var handleErrors = function handleErrors(err) {
     Object.values(err.errors).forEach(function (_ref) {
       var properties = _ref.properties;
       error[properties.path] = properties.message;
-    }); // err.errors.email ? 
-    // error.email = err.errors.email.properties.message:error.email = '';
-    // err.errors.password ? 
-    // error.password = err.errors.password.properties.message:error.password = '';
-    // console.log(error.email);
-    // console.log(error.password);
+    });
+  }
+
+  if (err.message === 'incorrect email') {
+    error.email = 'Введіть правельній email';
+  }
+
+  if (err.message === 'incorrect password') {
+    error.email = 'Введіть правельній пароль';
   }
 
   console.log(error);
@@ -50,9 +53,7 @@ var createToken = function createToken(id) {
 
 module.exports.signup_get = function (req, res) {
   res.render('signup');
-};
-
-module.exports.login_get = function (req, res) {
+}, module.exports.login_get = function (req, res) {
   res.render('login');
 };
 
@@ -74,7 +75,7 @@ module.exports.signup_post = function _callee(req, res) {
         case 4:
           user = _context.sent;
           token = createToken(user._id);
-          res.cookie('jwk', token, {
+          res.cookie('jwt', token, {
             httpOnly: true,
             maxAge: maxAge * 1000
           });
@@ -87,7 +88,7 @@ module.exports.signup_post = function _callee(req, res) {
         case 10:
           _context.prev = 10;
           _context.t0 = _context["catch"](1);
-          errors = handleErrors(_context.t0); //  handleErrors(err);
+          errors = handleErrors(_context.t0); //    handleErrors(err);
           //   res.status(400).send('error,user not created')
 
           res.status(400).json({
@@ -102,13 +103,52 @@ module.exports.signup_post = function _callee(req, res) {
   }, null, null, [[1, 10]]);
 };
 
-module.exports.login_post = function (req, res, err) {
-  var _req$body2 = req.body,
-      email = _req$body2.email,
-      password = _req$body2.password;
-  console.log(email, password);
-  res.status(201).json({
-    email: email,
-    password: password
+module.exports.login_post = function _callee2(req, res) {
+  var _req$body2, email, password, user, token, errors;
+
+  return regeneratorRuntime.async(function _callee2$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          _req$body2 = req.body, email = _req$body2.email, password = _req$body2.password;
+          _context2.prev = 1;
+          _context2.next = 4;
+          return regeneratorRuntime.awrap(User.login(email, password));
+
+        case 4:
+          user = _context2.sent;
+          token = createToken(user._id);
+          res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+          });
+          res.status(201).json({
+            user: user._id
+          });
+          _context2.next = 16;
+          break;
+
+        case 10:
+          _context2.prev = 10;
+          _context2.t0 = _context2["catch"](1);
+          errors = handleErrors(_context2.t0);
+          console.log(_context2.t0.message);
+          console.log(_context2.t0);
+          res.status(400).json({
+            errors: errors
+          });
+
+        case 16:
+        case "end":
+          return _context2.stop();
+      }
+    }
+  }, null, null, [[1, 10]]);
+};
+
+module.exports.logout_get = function (req, res) {
+  res.cookie('jwt', '', {
+    maxAge: 1
   });
+  res.redirect('/');
 };

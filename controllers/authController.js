@@ -5,7 +5,7 @@ const handleErrors = (err) => {
     console.log(err.message);
     // console.log(err._message);
     console.log(err.code);
-    const errors= {};
+    const errors = {};
     // dublicate error code
     if (err.code === 11000) {
         errors.email = 'this email is already registered';
@@ -24,14 +24,14 @@ const handleErrors = (err) => {
         }) => {
             error[properties.path] = properties.message;
         })
-   }
-   if (err.message === 'incorrect email'){
-       error.email = 'Введіть правельній email'
-   }
-   if (err.message === 'incorrect password'){
-    error.email = 'Введіть правельній пароль'
-}
-console.log(error);
+    }
+    if (err.message === 'incorrect email') {
+        error.email = 'Введіть правельній email'
+    }
+    if (err.message === 'incorrect password') {
+        error.email = 'Введіть правельній пароль'
+    }
+    console.log(error);
     return error;
 }
 const maxAge = 3 * 24 * 60 * 60;
@@ -46,7 +46,7 @@ const createToken = (id) => {
 module.exports.signup_get = (req, res) => {
     res.render('signup');
 }
-
+,
 module.exports.login_get = (req, res) => {
     res.render('login');
 }
@@ -71,10 +71,12 @@ module.exports.signup_post = async (req, res) => {
         });
     } catch (err) {
         const errors = handleErrors(err);
-      //    handleErrors(err);
+        //    handleErrors(err);
 
         //   res.status(400).send('error,user not created')
-        res.status(400).json({errors})
+        res.status(400).json({
+            errors
+        })
     }
 }
 
@@ -83,26 +85,30 @@ module.exports.login_post = async (req, res) => {
         email,
         password
     } = req.body;
-    // User.login(email,password);
-    // console.log(email, password);
-    
-    // res.status(201).json({email, password});
-   try {
-       const user = await User.login(email,password);
-       const token = createToken(user._id);
-       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000  });
-       res.status(201).json({user: user._id});
-   }
-   catch (err) {
-       const errors = handleErrors(err);
-      console.log( err.message);
-  console.log(err);
-       res.status(400).json({errors});
-   }
+    try {
+        const user = await User.login(email, password);
+        const token = createToken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+        });
+        res.status(201).json({
+            user: user._id
+        });
+    } catch (err) {
+        const errors = handleErrors(err);
+        console.log(err.message);
+        console.log(err);
+        res.status(400).json({
+            errors
+        });
+    }
 
 }
 
 module.exports.logout_get = (req, res) => {
-    res.cookie('jwt', '', {mavAge:1});
+    res.cookie('jwt', '', {
+        maxAge: 1
+    });
     res.redirect('/');
 }

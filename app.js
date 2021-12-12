@@ -56,14 +56,15 @@ app.use(function ( req, res, next) {
   
   next();
 });
-app.get('*', checkUser)
-app.use('/', indexRouter);
-app.use('/index1', index1Router);
+app.get('*', checkUser);
+app.get('/', function(req,res) {res.redirect('/home')});
+app.use('/home', requireAuth,indexRouter);
+app.use('/index1', requireAuth, index1Router);
 app.use('/users',requireAuth, usersRouter);
 // app.use('/actors', actorsRouter);
-app.use('/films', filmsRouter);
-app.use('/actors', actorsRouter);
-app.use('/usersPost', usersPostRouter);
+app.use('/films', requireAuth,filmsRouter);
+app.use('/actors',requireAuth, actorsRouter);
+app.use('/usersPost', requireAuth,usersPostRouter);
 app.use('/loadFile', loadFileRouter);
 
 

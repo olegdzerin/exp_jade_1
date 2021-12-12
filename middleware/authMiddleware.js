@@ -5,7 +5,7 @@ const User = require('../models/User');
 const requireAuth = (req, res, next) => {
 
     const token = req.cookies.jwt;
-    console.log(token);
+  //  console.log(token);
     //check json web token exist & is verified
     if (token) {
         jwt.verify(token, 'net ninja secret', (err, decodetToken) => {
