@@ -31,6 +31,7 @@ const handleErrors = (err) => {
     if (err.message === 'incorrect password') {
         error.email = 'Введіть правельній пароль'
     }
+ 
     console.log(error);
     return error;
 }

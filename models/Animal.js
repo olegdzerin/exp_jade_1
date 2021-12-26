@@ -1,37 +1,48 @@
   const mongoose = require('mongoose');
-  const {User, userSchema} = require('./User');
+  const {
+    User,
+    userSchema
+  } = require('./User');
 
-  // define a schema
-  //   const animalSchema = new mongoose.Schema({ name: String, type: String });
+  const user = new User({
+    email: 'aaa',
+    password: 'pass'
+  });
 
-  //   // assign a function to the "methods" object of our animalSchema
-  //   animalSchema.methods.findSimilarTypes = function(cb) {
-  //     return mongoose.model('Animal').find({ type: this.type }, cb);
-  //   };
-
-  //   const Animal = mongoose.model('Animal',  animalSchema);
-  //   const dog = new Animal({name: 'dog1', type: 'dog'});
-
-  //   dog.findSimilarTypes((err, dogs) => {
-  //     console.log(dogs); // woof
-  //   });
   const dbURI = "mongodb+srv://olegdzerin:moskva3504@cluster0.8sbw5.mongodb.net/sample-mfix?retryWrites=true&w=majority"
   async function main() {
-      await mongoose.connect(dbURI, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          useCreateIndex: true
-      })
-       getUser()
-
+    await mongoose.connect(dbURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true
+    });
+    //section1
+    // const users = await User.find();
+    // console.log(users)
+    //section2
+    // const users = await getUser();
+    // console.log(users);
+    //section3
+    const vita = new User({
+      email: 'vita11@gmail.com',
+      password: '111111'
+    });
+    console.log(vita);
+    const v = await vita.save();
+    console.log(vita);
+    console.log(v.logEmail());
   }
 
-  function getUser() {
-  
-    User.find(function(err, users){
-        if (err) return err;
-        console.log(users);
+  function getUserCb() {
+
+    User.find(function (err, users) {
+      if (err) return err;
+      console.log(users);
     })
   };
-  main();
 
+  function getUser() {
+
+    return User.find();
+  };
+  main();
